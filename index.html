@@ -1,18 +1,80 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./Src/css/fonts.css" />
+    <link rel="stylesheet" href="./Src/css/style.css" />
+
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Document</title>
+    <title>مدیریت تسک‌ها</title>
   </head>
-  <body>
-    <header>
-      <aside></aside>
-    </header>
-    <main></main>
-    <script src="Src/js/main.js"></script>
+  <body class="theme-dark">
+    <main class="task-page">
+      <header class="task-page__header">
+        <div>
+          <h1 class="task-page__title">تسک‌های امروز</h1>
+          <p class="task-page__description">3 تسک را باید انجام دهید.</p>
+        </div>
+        <button type="button" class="task-page__add-button">
+          <span>+</span>
+          <span>افزودن وظیفه جدید</span>
+        </button>
+      </header>
+
+      <section class="today-tasks" aria-labelledby="today-tasks-title">
+        <div class="empty-state">
+          <img
+            src="./Src/assets/images/no-tasks.jpg"
+            alt="بدون تسک"
+            class="empty-state__image"
+          />
+          <div class="empty-state__content">
+            <h2 id="today-tasks-title" class="empty-state__title">
+              چه کارهایی امروز برای انجام داری؟
+            </h2>
+            <p class="empty-state__description">
+              میتونی الان تسک‌هاتو اینجا بنویسی و برنامه ریزی رو شروع کنی!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="completed-tasks" aria-labelledby="completed-tasks-title">
+        <div class="completed-tasks__header">
+          <div>
+            <h2 id="completed-tasks-title">تسک‌های انجام‌شده</h2>
+            <p>3 تسک انجام شده است.</p>
+          </div>
+        </div>
+
+        <ul class="completed-tasks__list">
+          <li class="task-card">
+            <label class="task-card__content">
+              <input type="checkbox" checked />
+              <span>خرید میوه و سبزیجات و لبنیات برای خانه </span>
+            </label>
+          </li>
+
+          <li class="task-card">
+            <label class="task-card__content">
+              <input type="checkbox" checked />
+              <span>تماس با مبل فروشی در مورد تاخیر در ارسال </span>
+            </label>
+          </li>
+
+          <li class="task-card">
+            <label class="task-card__content">
+              <input type="checkbox" checked />
+              <span>جلسه با مرتضی در مورد مصاحبه با کارآموز ادمین پنل</span>
+            </label>
+          </li>
+        </ul>
+      </section>
+    </main>
+
     <script src="Src/js/storage.js"></script>
     <script src="Src/js/tasks.js"></script>
+    <script src="Src/js/main.js"></script>
   </body>
 </html>
