@@ -1,14 +1,13 @@
 const THEME_KEY = "theme";
-const root = document.documentElement; // تگ <html>
+const root = document.documentElement;
 
-// ---------- بخش ۱: اعمال فوری تم (قبل از رندر صفحه) ----------
+// ---------- اعمال فوری تم (قبل از رندر صفحه) ----------
 function getSavedTheme() {
   try {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === "dark" || saved === "light") return saved;
   } catch (e) {}
 
-  // اگر چیزی ذخیره نشده بود، از تم سیستم‌عامل پیروی کن
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
@@ -26,20 +25,16 @@ function setTheme(theme) {
   applyTheme(theme);
   try {
     localStorage.setItem(THEME_KEY, theme);
-  } catch (e) {
-    // اگر localStorage در دسترس نبود، فقط تم همین نشست اعمال می‌شود
-  }
+  } catch (e) {}
 }
 
-// همین الان اجرا می‌شود (دکمه‌ها هنوز وجود ندارند، مشکلی نیست)
 applyTheme(getSavedTheme());
 
-// ---------- بخش ۲: اتصال دکمه‌ها (بعد از آماده شدن DOM) ----------
+// ----------  اتصال دکمه‌ها (بعد از آماده شدن DOM) ----------
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-theme-btn]").forEach((btn) => {
     btn.addEventListener("click", () => setTheme(btn.dataset.themeBtn));
   });
 
-  // دکمه‌ها حالا وجود دارند، پس aria-pressed را هماهنگ کن
   applyTheme(getSavedTheme());
 });

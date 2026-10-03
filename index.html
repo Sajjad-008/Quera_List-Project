@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <style type="text/tailwindcss">
-      /* dark: وقتی کلاس theme-dark روی body یا والدها باشد فعال می‌شود */
       @custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
       @theme {
@@ -19,12 +18,11 @@
     <title>مدیریت تسک‌ها</title>
   </head>
 
-  <!-- برای دیدن حالت روشن، کلاس theme-dark را از body حذف کنید -->
   <body
     class="font-sans bg-[#fafafa] text-[#171717] transition-colors duration-300 dark:bg-[#080b15] dark:text-[#f5f5f7]"
   >
     <div class="min-h-screen lg:flex">
-      <!-- ===== Mobile Menu Toggle (کنترل باز/بسته بودن منو؛ فعلاً بدون JS) ===== -->
+      <!-- ===== Mobile Menu Toggle ===== -->
       <input
         type="checkbox"
         id="mobile-menu-toggle"
@@ -244,7 +242,6 @@
           <div
             class="relative flex w-full items-center gap-1 rounded-lg bg-gray-100 p-1 dark:bg-[#080b15]"
           >
-            <!-- کپسول متحرک: در حالت روشن سمت راست (زیر «روشن»)، در حالت تاریک سمت چپ (زیر «تاریک») -->
             <span
               aria-hidden="true"
               class="pointer-events-none absolute inset-y-1 right-1 w-[calc(50%-6px)] rounded-md bg-white shadow-sm transition-all duration-300 ease-in-out motion-reduce:transition-none dark:-translate-x-[calc(100%+4px)] dark:bg-[#16243d] dark:shadow-none"
