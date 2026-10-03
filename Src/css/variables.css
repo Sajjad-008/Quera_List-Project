@@ -1,0 +1,55 @@
+@theme{
+    --color-black: #242424;
+    --color-white: #FFFFFF;
+    --color-gray-32: #323233;
+    --color-gray-69: #696969;
+    --color-gray-72: #727272;
+    --color-gray-84: #848890;
+    --color-gray-F7: #F7F7F7;
+    --color-gray-52: #525252;
+    --color-gray-7D: #7D7D7F;
+    --color-gray-AF: #AFAEB2;
+    --color-gray-E9:#E9E9E9;
+    --color-blue-addtask:#203E62;
+    --color-blue-checkbox:#007BFF;
+    --color-blue-dash:#203E62;
+    --color-blue-tasks:#091120;
+    --color-background-dark:#060C18;
+    --color-background-light:#FFFFFF;
+    --color-dark-blue:#203E62;
+    --color-orange:#FF5F37;
+    --color-light-orange:#FFE2DB;
+    --color-yellow:#FFAF37;
+    --color-light-yellow:#C3FFF1;
+    --color-green:#11A483;
+    --color-light-green:#C3FFF1;
+    
+}
+
+@media (prefers-color-scheme: dark) {
+  .task-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: auto;
+    flex: none;
+    border: 1px solid #848890;
+    border-radius: 8px;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  .task-checkbox:checked {
+    border-color: #007BFF;
+    background-color: #007BFF;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='m5 12 4 4L19 6' stroke='%23060C18' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
+  }
+
+  .task-checkbox:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+  }
+}
