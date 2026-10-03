@@ -1,40 +1,24 @@
 const THEME_KEY = "theme";
 const root = document.documentElement;
 
-// ---------- اعمال فوری تم (قبل از رندر صفحه) ----------
-function getSavedTheme() {
-  try {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved === "dark" || saved === "light") return saved;
-  } catch (e) {}
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-}
-
-function applyTheme(theme) {
-  root.classList.toggle("theme-dark", theme === "dark");
-
+function syncButtons() {
+  const current = root.classList.contains("theme-dark") ? "dark" : "light";
   document.querySelectorAll("[data-theme-btn]").forEach((btn) => {
-    btn.setAttribute("aria-pressed", String(btn.dataset.themeBtn === theme));
+    btn.setAttribute("aria-pressed", String(btn.dataset.themeBtn === current));
   });
 }
 
 function setTheme(theme) {
-  applyTheme(theme);
+  root.classList.toggle("theme-dark", theme === "dark");
   try {
     localStorage.setItem(THEME_KEY, theme);
   } catch (e) {}
+  syncButtons();
 }
 
-applyTheme(getSavedTheme());
-
-// ----------  اتصال دکمه‌ها (بعد از آماده شدن DOM) ----------
-document.addEventListener("DOMContentLoaded", () => {
+export function initTheme() {
   document.querySelectorAll("[data-theme-btn]").forEach((btn) => {
     btn.addEventListener("click", () => setTheme(btn.dataset.themeBtn));
   });
-
-  applyTheme(getSavedTheme());
-});
+  syncButtons();
+}
