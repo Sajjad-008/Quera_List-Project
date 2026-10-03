@@ -1,3 +1,19 @@
+@import "tailwindcss";
+@font-face {
+  font-family: "Yekan Bakh";
+  src: url("../assets/fonts/YekanBakh-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan Bakh";
+  src: url("../assets/fonts/YekanBakh-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
 @theme{
     --color-black: #242424;
     --color-white: #FFFFFF;
@@ -53,3 +69,9 @@
     outline-offset: 2px;
   }
 }
+ @custom-variant dark (&:where(.theme-dark, .theme-dark *));
+      @custom-variant menu-open (&:where([data-menu="open"] *));
+
+      @theme {
+        --font-sans: "Yekan Bakh", sans-serif;
+      }
