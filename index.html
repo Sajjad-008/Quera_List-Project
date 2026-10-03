@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./Src/css/fonts.css" />
-    <link rel="stylesheet" href="./Src/css/variables.css"/>
-    <script src="./Src/js/theme.js"></script>
+    <link rel="stylesheet" href="./Src/css/variables.css" />
+    <script src="./Src/js/theme-init.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <style type="text/tailwindcss">
       @custom-variant dark (&:where(.theme-dark, .theme-dark *));
+      @custom-variant menu-open (&:where([data-menu="open"] *));
 
       @theme {
         --font-sans: "Yekan Bakh", sans-serif;
@@ -20,23 +21,19 @@
   </head>
 
   <body
-    class="font-sans bg-[#fafafa] text-[#171717] transition-colors duration-300 dark:bg-[#080b15] dark:text-[#f5f5f7]"
+    class="font-sans bg-[#fafafa] text-[#171717] transition-colors duration-300 dark:bg-[#080b15] dark:text-[#f5f5f7] menu-open:overflow-hidden"
   >
     <div class="min-h-screen lg:flex">
-      <!-- ===== Mobile Menu Toggle ===== -->
-      <input
-        type="checkbox"
-        id="mobile-menu-toggle"
-        class="peer/menu sr-only"
-      />
-
       <!-- ===== Mobile Header ===== -->
       <header
         class="sticky top-0 z-30 mx-4 mt-4 flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 lg:hidden dark:border-[#1a2238] dark:bg-[#0d1120]"
       >
-        <label
-          for="mobile-menu-toggle"
+        <button
+          type="button"
+          data-menu-toggle
           aria-label="باز کردن منو"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
           class="cursor-pointer"
         >
           <svg
@@ -49,26 +46,29 @@
           >
             <path d="M4 7h16M4 12h16M4 17h16" />
           </svg>
-        </label>
+        </button>
         <span class="text-sm font-extrabold">کوئرا لیست</span>
         <span class="size-6"></span>
       </header>
 
       <!-- ===== Mobile Overlay ===== -->
-      <label
-        for="mobile-menu-toggle"
-        class="pointer-events-none fixed inset-0 z-40 bg-black/60 opacity-0 transition-opacity duration-300 peer-checked/menu:pointer-events-auto peer-checked/menu:opacity-100 lg:hidden"
-      ></label>
+      <div
+        data-menu-close
+        aria-hidden="true"
+        class="pointer-events-none fixed inset-0 z-40 bg-black/60 opacity-0 transition-opacity duration-300 menu-open:pointer-events-auto menu-open:opacity-100 lg:hidden"
+      ></div>
 
       <!-- ================= Sidebar (موبایل: منوی کشویی | دسکتاپ: سایدبار ثابت) ================= -->
       <aside
-        class="fixed inset-y-0 right-0 z-50 flex w-[280px] translate-x-full flex-col border-l border-gray-100 bg-white p-6 transition-transform duration-300 peer-checked/menu:translate-x-0 lg:sticky lg:top-4 lg:z-auto lg:m-4 lg:h-[calc(100vh-32px)] lg:shrink-0 lg:translate-x-0 lg:self-start lg:rounded-2xl lg:border lg:transition-none dark:border-[#1a2238] dark:bg-[#0d1120]"
+        id="mobile-menu"
+        class="fixed inset-y-0 right-0 z-50 flex w-[280px] translate-x-full flex-col border-l border-gray-100 bg-white p-6 transition-transform duration-300 menu-open:translate-x-0 lg:sticky lg:top-4 lg:z-auto lg:m-4 lg:h-[calc(100vh-32px)] lg:shrink-0 lg:translate-x-0 lg:self-start lg:rounded-2xl lg:border lg:transition-none dark:border-[#1a2238] dark:bg-[#0d1120]"
       >
         <!-- هدر منو (فقط موبایل) -->
         <div class="mb-8 flex items-center justify-between lg:hidden">
           <span class="text-sm font-extrabold">کوئرا لیست</span>
-          <label
-            for="mobile-menu-toggle"
+          <button
+            type="button"
+            data-menu-close
             aria-label="بستن منو"
             class="cursor-pointer"
           >
@@ -82,7 +82,7 @@
             >
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
-          </label>
+          </button>
         </div>
 
         <!-- Profile (فقط دسکتاپ) -->
@@ -261,7 +261,7 @@
                   class="size-5 object-contain dark:hidden"
                 />
                 <img
-                  src="./Src/assets/images/Sun-dark.png"
+                  src="./Src/assets/images/Sun-Dark.png"
                   alt=""
                   class="hidden size-5 object-contain dark:block"
                 />
@@ -282,7 +282,7 @@
                   class="size-5 object-contain dark:hidden"
                 />
                 <img
-                  src="./Src/assets/images/Moon-dark.png"
+                  src="./Src/assets/images/Moon-Dark.png"
                   alt=""
                   class="hidden size-5 object-contain dark:block"
                 />
@@ -321,7 +321,6 @@
         <div
           class="mx-auto flex w-full max-w-[820px] flex-col gap-8 px-4 py-8 lg:px-6 lg:py-10"
         >
-          <!-- Profile (فقط موبایل) -->
           <!-- Profile (فقط موبایل) -->
           <div
             class="flex items-center gap-3 border-b border-gray-100 pb-6 lg:hidden dark:border-[#1a2238]"
@@ -479,6 +478,6 @@
 
     <script src="Src/js/storage.js"></script>
     <script src="Src/js/tasks.js"></script>
-    <script src="Src/js/main.js"></script>
+    <script type="module" src="Src/js/main.js"></script>
   </body>
 </html>
