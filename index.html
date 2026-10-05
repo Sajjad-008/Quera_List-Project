@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="./Src/js/theme-init.js"></script>
-    <link href="./Src/css/output.css" rel="stylesheet">
+    <link href="./Src/css/output.css" rel="stylesheet" />
     <title>مدیریت تسک‌ها</title>
   </head>
 
@@ -328,23 +328,29 @@
           <header class="flex w-full flex-col gap-4">
             <div class="flex flex-col gap-1">
               <h1 class="text-xl font-extrabold leading-snug">تسک‌های امروز</h1>
-              <p class="text-sm text-[#afaeb2] dark:text-[#8b8c98]">
+              <p
+                id="today-tasks-count"
+                class="text-sm text-[#afaeb2] dark:text-[#8b8c98]"
+                data-count="3"
+              >
                 3 تسک را باید انجام دهید.
               </p>
             </div>
-            <button
-              type="button"
-              class="flex w-full items-center gap-2 rounded-lg border border-dashed border-[#3b82f6] px-4 py-3 text-sm font-extrabold text-[#3b82f6]"
+            <label
+              id="task-adder-btn"
+              class="flex w-full items-center gap-2 rounded-lg border border-dashed border-[#3b82f6] px-4 py-3 text-sm font-extrabold text-[#3b82f6] cursor-pointer"
             >
               <span>+</span>
               <span>افزودن وظیفه جدید</span>
-            </button>
+              <input type="checkbox" class="hidden" />
+            </label>
           </header>
 
           <!-- Today's Tasks (Empty State) -->
           <section
             aria-labelledby="today-tasks-title"
             class="flex w-full flex-col items-center py-6 text-center"
+            id="empty-state"
           >
             <img
               src="./Src/assets/images/no-tasks.jpg"
@@ -364,6 +370,9 @@
                 میتونی الان تسک‌هاتو اینجا بنویسی و برنامه ریزی رو شروع کنی!
               </p>
             </div>
+          </section>
+          <section id="today">
+            <ul id="today-tasks" class="flex flex-col gap-3"></ul>
           </section>
 
           <!-- Completed Tasks -->
