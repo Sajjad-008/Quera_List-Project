@@ -328,122 +328,29 @@
           <header class="flex w-full flex-col gap-4">
             <div class="flex flex-col gap-1">
               <h1 class="text-xl font-extrabold leading-snug">تسک‌های امروز</h1>
-              <p class="text-sm text-[#afaeb2] dark:text-[#8b8c98]">
+              <p
+                id="today-tasks-count"
+                class="text-sm text-[#afaeb2] dark:text-[#8b8c98]"
+                data-count="3"
+              >
                 3 تسک را باید انجام دهید.
               </p>
             </div>
-            <button
-              type="button"
-              class="flex w-full items-center gap-2 rounded-lg border border-dashed border-[#3b82f6] px-4 py-3 text-sm font-extrabold text-[#3b82f6]"
+            <label
+              id="task-adder-btn"
+              class="flex w-full items-center gap-2 rounded-lg border border-dashed border-[#3b82f6] px-4 py-3 text-sm font-extrabold text-[#3b82f6] cursor-pointer"
             >
               <span>+</span>
               <span>افزودن وظیفه جدید</span>
-            </button>
-            <div
-              class="make-task rounded-md border border-gray-E9 bg-(--color-background-light) dark:bg-background-dark dark:border-[#3D3D3D] shadow-lg"
-            >
-              <div
-                class="flex flex-col items-start gap-3 border-b border-gray-E9 dark:border-[#3D3D3D] p-4"
-              >
-                <input
-                  type="text"
-                  name="title"
-                  id="make-task__title"
-                  maxlength="100"
-                  placeholder="نام تسک"
-                  class="font-semibold flex-1 placeholder:text-gray-7D dark:placeholder:text-(--color-white) w-full focus:outline-none"
-                />
-                <textarea
-                  name="desc"
-                  id="make-task__desc"
-                  cols="2"
-                  placeholder="توضیحات"
-                  maxlength="300"
-                  class="text-xs resize-none flex-1 placeholder:text-gray-AF w-full focus:outline-none"
-                ></textarea>
-                <label
-                  class="rounded-md px-2 py-1 flex items-center gap-1 border border-gray-E9 dark:border-[#83878F] cursor-pointer hover:opacity-70"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M13.9336 2.81328V10.4399C13.9336 10.8933 13.6203 11.46 13.2336 11.7L8.78026 14.4866C8.34693 14.7533 7.66693 14.7266 7.26026 14.42L2.66026 10.9666C2.33359 10.72 2.06693 10.1866 2.06693 9.77995V2.81328C2.06693 1.64661 3.34693 0.939975 4.34026 1.55331L7.29359 3.39995C7.68693 3.64661 8.32693 3.64661 8.72026 3.39995L11.6736 1.55331C12.6536 0.939975 13.9336 1.65328 13.9336 2.81328Z"
-                      fill="#AFAEB2"
-                      stroke="#AFAEB2"
-                      stroke-miterlimit="10"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-
-                  <span class="text-gray-AF">تگ ها</span>
-                  <input type="checkbox" name="tags" class="hidden" />
-                </label>
-                <ul
-                  class="flex items-center rounded-md border border-gray-E9 dark:bg-[#0B192D] dark:border-[#293242] py-1 px-2 text-xs font-bold shadow-md"
-                >
-                  <li class="border-l border-gray-E9 dark:border-[#293242]">
-                    <span
-                      class="bg-light-green text-green rounded-md text-center cursor-pointer py-1 px-2 hover:opacity-70 m-2"
-                    >
-                      پایین
-                    </span>
-                  </li>
-                  <li class="border-l border-gray-E9 dark:border-[#293242]">
-                    <span
-                      class="bg-light-yellow text-yellow rounded-md text-center cursor-pointer py-1 px-2 hover:opacity-70 m-2"
-                    >
-                      متوسط
-                    </span>
-                  </li>
-                  <li>
-                    <span
-                      class="bg-light-orange text-orange rounded-md text-center cursor-pointer py-1 px-2 hover:opacity-70 m-2"
-                    >
-                      بالا
-                    </span>
-                  </li>
-                </ul>
-              </div>
-              <div class="py-4 flex justify-end gap-2 px-4">
-                <button
-                  id="cancel-task"
-                  class="bg-gray-F7 dark:bg-[#0C1B31] px-2 rounded-md hover:opacity-80"
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 22 22"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5.5 5.5L11 11M11 11L16.5 16.5M11 11L16.5 5.5M11 11L5.5 16.5"
-                      stroke="#9E9E9E"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
-                <button
-                  class="dark:bg-(--color-blue-addtask) bg-blue-checkbox text-white px-4 py-1.5 rounded-md disabled:opacity-60 hover:opacity-80 transition-colors duration-300"
-                >
-                  اضافه کردن تسک
-                </button>
-              </div>
-            </div>
+              <input type="checkbox" class="hidden" />
+            </label>
           </header>
 
           <!-- Today's Tasks (Empty State) -->
           <section
             aria-labelledby="today-tasks-title"
             class="flex w-full flex-col items-center py-6 text-center"
+            id="empty-state"
           >
             <img
               src="./Src/assets/images/no-tasks.jpg"
@@ -463,6 +370,9 @@
                 میتونی الان تسک‌هاتو اینجا بنویسی و برنامه ریزی رو شروع کنی!
               </p>
             </div>
+          </section>
+          <section id="today">
+            <ul id="today-tasks" class="flex flex-col gap-3"></ul>
           </section>
 
           <!-- Completed Tasks -->
