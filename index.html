@@ -388,14 +388,17 @@
               <h2 id="completed-tasks-title" class="text-xl font-extrabold">
                 تسک‌های انجام‌شده
               </h2>
-              <p class="text-sm text-[#afaeb2] dark:text-[#8b8c98]">
+              <p
+                id="completed-tasks-count"
+                class="text-sm text-[#afaeb2] dark:text-[#8b8c98]"
+              >
                 3 تسک انجام شده است.
               </p>
             </div>
 
-            <ul class="flex flex-col gap-3">
+            <ul id="completed-tasks" class="flex flex-col gap-3">
               <li
-                class="relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white py-4 pr-5 pl-4 shadow-sm after:absolute after:inset-y-0 after:right-0 after:w-1 after:bg-[#f2bd55] even:after:bg-[#ef6b55] dark:border-[#1a2238] dark:bg-[#0d1120] dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+                class="relative flex items-center justify-between overflow-visible rounded-xl border border-gray-200 bg-white py-4 pr-5 pl-4 shadow-sm after:absolute after:inset-y-0 after:right-0 after:w-1 after:bg-[#f2bd55] even:after:bg-[#ef6b55] dark:border-[#1a2238] dark:bg-[#0d1120] dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
               >
                 <label
                   class="flex min-w-0 flex-1 cursor-pointer items-center gap-3"
@@ -403,10 +406,10 @@
                   <input
                     type="checkbox"
                     checked
-                    class="peer size-[18px] shrink-0 cursor-pointer accent-[#3b82f6]"
+                    class="peer task-checkbox"
                   />
                   <span
-                    class="min-w-0 break-words text-sm font-medium peer-checked:text-[#7d7d7f] peer-checked:line-through dark:peer-checked:text-[#d1d1d5]"
+                    class="min-w-0 break-words text-sm font-medium peer-checked:text-gray-32 peer-checked:line-through dark:peer-checked:text-white"
                   >
                     خرید میوه و سبزیجات و لبنیات برای خانه
                   </span>
@@ -421,7 +424,7 @@
               </li>
 
               <li
-                class="relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white py-4 pr-5 pl-4 shadow-sm after:absolute after:inset-y-0 after:right-0 after:w-1 after:bg-[#f2bd55] even:after:bg-[#ef6b55] dark:border-[#1a2238] dark:bg-[#0d1120] dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+                class="relative flex items-center justify-between overflow-visible rounded-xl border border-gray-200 bg-white py-4 pr-5 pl-4 shadow-sm after:absolute after:inset-y-0 after:right-0 after:w-1 after:bg-[#f2bd55] even:after:bg-[#ef6b55] dark:border-[#1a2238] dark:bg-[#0d1120] dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
               >
                 <label
                   class="flex min-w-0 flex-1 cursor-pointer items-center gap-3"
@@ -429,10 +432,10 @@
                   <input
                     type="checkbox"
                     checked
-                    class="peer size-[18px] shrink-0 cursor-pointer accent-[#3b82f6]"
+                    class="peer task-checkbox"
                   />
                   <span
-                    class="min-w-0 break-words text-sm font-medium peer-checked:text-[#7d7d7f] peer-checked:line-through dark:peer-checked:text-[#d1d1d5]"
+                    class="min-w-0 break-words text-sm font-medium peer-checked:text-gray-32 peer-checked:line-through dark:peer-checked:text-white"
                   >
                     تماس با مبل فروشی در مورد تاخیر در ارسال
                   </span>
@@ -447,7 +450,7 @@
               </li>
 
               <li
-                class="relative flex items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white py-4 pr-5 pl-4 shadow-sm after:absolute after:inset-y-0 after:right-0 after:w-1 after:bg-[#f2bd55] even:after:bg-[#ef6b55] dark:border-[#1a2238] dark:bg-[#0d1120] dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+                class="relative flex items-center justify-between overflow-visible rounded-xl border border-gray-200 bg-white py-4 pr-5 pl-4 shadow-sm after:absolute after:inset-y-0 after:right-0 after:w-1 after:bg-[#f2bd55] even:after:bg-[#ef6b55] dark:border-[#1a2238] dark:bg-[#0d1120] dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
               >
                 <label
                   class="flex min-w-0 flex-1 cursor-pointer items-center gap-3"
@@ -455,10 +458,10 @@
                   <input
                     type="checkbox"
                     checked
-                    class="peer size-[18px] shrink-0 cursor-pointer accent-[#3b82f6]"
+                    class="peer task-checkbox"
                   />
                   <span
-                    class="min-w-0 break-words text-sm font-medium peer-checked:text-[#7d7d7f] peer-checked:line-through dark:peer-checked:text-[#d1d1d5]"
+                    class="min-w-0 break-words text-sm font-medium peer-checked:text-gray-32 peer-checked:line-through dark:peer-checked:text-white"
                   >
                     جلسه با مرتضی در مورد مصاحبه با کارآموز ادمین پنل
                   </span>
