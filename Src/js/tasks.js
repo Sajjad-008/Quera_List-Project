@@ -310,6 +310,7 @@ function taskCard(taskObject) {
 }
 
 export function taskAdder() {
+  initCompletedTasks();
   const adderBtn = document.getElementById("task-adder-btn");
   adderBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -401,6 +402,145 @@ function createMoreBtn() {
   return moreBtn;
 }
 
+function updateCompletedTaskCount() {
+  const count = document.querySelector("#completed-tasks-count");
+  count.textContent = `${document.querySelectorAll("#completed-tasks > li").length} تسک انجام شده است.`;
+}
+
+function createCompletedMoreBtn(task) {
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("relative", "flex", "items-center");
+
+  const moreBtn = document.createElement("button");
+  moreBtn.type = "button";
+  moreBtn.setAttribute("aria-label", "گزینه‌های تسک انجام‌شده");
+  moreBtn.setAttribute("aria-expanded", "false");
+  moreBtn.classList.add(
+    "relative",
+    "cursor-pointer",
+    "px-2",
+    "text-gray-400",
+    "hover:opacity-80",
+  );
+  moreBtn.textContent = "⋮";
+
+  const menu = document.createElement("div");
+  menu.classList.add(
+    "absolute",
+    "flex",
+    "items-center",
+    "justify-end",
+    "z-10",
+    "hidden",
+    "rounded-lg",
+    "border",
+    "border-gray-200",
+    "bg-white",
+    "p-1",
+    "shadow-md",
+    "dark:border-[#293242]",
+    "dark:bg-[#0d1120]",
+  );
+  menu.style.cssText =
+    "left:0;top:100%;right:auto;transform:none;margin-top:4px;width:112px;height:48px;box-sizing:border-box";
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.setAttribute("aria-label", "حذف تسک انجام‌شده");
+  deleteBtn.classList.add(
+    "flex",
+    "cursor-pointer",
+    "items-center",
+    "justify-center",
+    "rounded-md",
+    "hover:opacity-80",
+  );
+  deleteBtn.style.width = "2.25rem";
+  deleteBtn.style.height = "2.25rem";
+  deleteBtn.style.color = "#ef6b55";
+  const lightDeleteIcon = document.createElement("img");
+  lightDeleteIcon.src = "./Src/assets/images/delete button.png";
+  lightDeleteIcon.alt = "";
+  lightDeleteIcon.classList.add("dark:hidden");
+  lightDeleteIcon.style.width = "32px";
+  lightDeleteIcon.style.height = "32px";
+
+  const darkDeleteIcon = document.createElement("img");
+  darkDeleteIcon.src = "./Src/assets/images/delete button dark.png";
+  darkDeleteIcon.alt = "";
+  darkDeleteIcon.classList.add("hidden", "dark:block");
+  darkDeleteIcon.style.width = "32px";
+  darkDeleteIcon.style.height = "32px";
+
+  deleteBtn.append(lightDeleteIcon, darkDeleteIcon);
+  deleteBtn.addEventListener("click", () => {
+    task.remove();
+    updateCompletedTaskCount();
+  });
+
+  moreBtn.addEventListener("click", () => {
+    const opening = menu.classList.contains("hidden");
+    document
+      .querySelectorAll("#completed-tasks [aria-expanded='true']")
+      .forEach((button) => {
+        if (button !== moreBtn) {
+          button.setAttribute("aria-expanded", "false");
+          button.nextElementSibling.classList.add("hidden");
+        }
+      });
+    menu.classList.toggle("hidden", !opening);
+    moreBtn.setAttribute("aria-expanded", String(opening));
+  });
+
+  menu.appendChild(deleteBtn);
+  wrapper.append(moreBtn, menu);
+  return wrapper;
+}
+
+function moveTaskOnCompletion(input) {
+  const task = input.closest("li");
+  const completed = input.checked;
+  const targetList = document.querySelector(
+    completed ? "#completed-tasks" : "#today-tasks",
+  );
+  const currentOptions = task.querySelector(":scope > button, :scope > div");
+
+  task.classList.remove("overflow-hidden", "overflow-visible");
+  task.classList.add(completed ? "overflow-visible" : "overflow-hidden");
+  input.classList.toggle("task-checkbox", completed);
+
+  if (completed) {
+    currentOptions.replaceWith(createCompletedMoreBtn(task));
+  } else {
+    currentOptions.replaceWith(createMoreBtn());
+  }
+
+  targetList.appendChild(task);
+  document.querySelector("#empty-state").classList.toggle(
+    "hidden",
+    document.querySelector("#today-tasks").children.length > 0,
+  );
+  updateCompletedTaskCount();
+}
+
+function initCompletedTasks() {
+  document
+    .querySelectorAll(
+      "#today-tasks input[type='checkbox'], #completed-tasks input[type='checkbox']",
+    )
+    .forEach((input) => {
+      input.addEventListener("change", () => moveTaskOnCompletion(input));
+    });
+
+  document.querySelectorAll("#completed-tasks > li").forEach((task) => {
+    task.querySelector("input[type='checkbox']").classList.add("task-checkbox");
+    const options = task.querySelector("button");
+    options.replaceWith(createCompletedMoreBtn(task));
+  });
+
+  updateCompletedTaskCount();
+}
+
 function createTask(taskObject) {
   const task = document.createElement("li");
   console.log(getColor(taskObject.priority));
@@ -453,15 +593,16 @@ function createTask(taskObject) {
     "cursor-pointer",
     "accent-[#3b82f6]",
   );
+  input.addEventListener("change", () => moveTaskOnCompletion(input));
   const taskDetails = document.createElement("div");
   taskDetails.classList.add("flex", "flex-col", "gap-1", "items-start");
   const title = document.createElement("span");
   title.classList.add(
     "min-w-0",
     "wrap-break-word",
-    "peer-checked:text-gray-7D",
+    "peer-checked:text-gray-32",
     "peer-checked:line-through",
-    "dark:peer-checked:text-[#d1d1d5]",
+    "dark:peer-checked:text-white",
     "font-semibold",
   );
   title.textContent = taskObject.title;
