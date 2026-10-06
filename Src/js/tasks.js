@@ -81,8 +81,8 @@ function createTagList(...priorities) {
     "border-gray-E9",
     "dark:bg-[#0B192D]",
     "dark:border-[#293242]",
-    "py-1",
-    "px-2",
+    "py-2",
+    "px-1",
     "text-xs",
     "font-bold",
     "shadow-md",
@@ -235,6 +235,10 @@ function createTaskAdder() {
 
 function taskCard(taskObject) {
   const card = document.createElement("div");
+  card.id = "task-card";
+  card.addEventListener("click", () => {
+    card.classList.remove("border-orange");
+  });
   card.classList.add(
     "rounded-md",
     "border",
@@ -305,7 +309,7 @@ function taskCard(taskObject) {
   }
   card.append(taskDetails, controls);
   taskTitle.addEventListener("input", validAdder);
-
+  taskDesc.addEventListener("input", validAdder);
   return card;
 }
 
@@ -333,6 +337,7 @@ function getTask(task) {
 }
 function createTaskOptions() {
   const wrapper = document.createElement("div");
+  wrapper.id = "task-options";
   wrapper.classList.add(
     "flex",
     "shadow-md",
@@ -374,11 +379,16 @@ function createTaskOptions() {
   );
   wrapper.firstElementChild.addEventListener("click", (ev) => {
     const task = ev.currentTarget.parentElement.parentElement.parentElement;
-    task.after(taskCard(getTask(task)));
-    task.remove();
-  });
-  console.log(wrapper);
-  wrapper.addEventListener("mou", () => {
+    const card = document.getElementById("task-card");
+    if (card) {
+      card.classList.add("transition-color", "border-orange");
+    } else {
+      task.after(taskCard(getTask(task)));
+      validAdder();
+      const adderBtn = document.getElementById("task-adder-btn");
+      adderBtn.classList.add("hidden");
+      task.remove();
+    }
     wrapper.remove();
   });
   // write delete function for firstelementchild
@@ -395,9 +405,11 @@ function createMoreBtn() {
     "overflow-visible",
   );
   moreBtn.textContent = "⋮";
-  moreBtn.addEventListener("click", () => {
-    const options = createTaskOptions();
-    moreBtn.appendChild(options);
+  moreBtn.addEventListener("click", (ev) => {
+    if (ev.target === ev.currentTarget) {
+      const options = createTaskOptions();
+      moreBtn.appendChild(options);
+    }
   });
   return moreBtn;
 }
@@ -596,6 +608,8 @@ function createTask(taskObject) {
   input.addEventListener("change", () => moveTaskOnCompletion(input));
   const taskDetails = document.createElement("div");
   taskDetails.classList.add("flex", "flex-col", "gap-1", "items-start");
+  const wrap = document.createElement("div");
+  wrap.classList.add("flex", "gap-2");
   const title = document.createElement("span");
   title.classList.add(
     "min-w-0",
@@ -609,6 +623,7 @@ function createTask(taskObject) {
   const tag = createTag(taskObject.priority);
   tag.classList.remove("m-2");
   tag.classList.add("text-xs", "font-semibold");
+  wrap.append(title, tag);
   const desc = document.createElement("span");
   desc.classList.add(
     "min-w-0",
@@ -622,7 +637,7 @@ function createTask(taskObject) {
   );
   desc.textContent = taskObject.desc;
 
-  taskDetails.append(title, tag, desc);
+  taskDetails.append(wrap, desc);
   label.append(input, taskDetails);
 
   const moreBtn = createMoreBtn();
