@@ -72,6 +72,19 @@
   outline-color: #ffffff;
 }
 
+.completed-task-card.completed-task-card::after {
+  background-color: var(--task-accent);
+}
+
+.completed-task-card .task-title {
+  color: var(--color-gray-32);
+  text-decoration: line-through;
+}
+
+.theme-dark .completed-task-card .task-title {
+  color: var(--color-white);
+}
+
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
 @custom-variant menu-open (&:where([data-menu="open"] *));
 
