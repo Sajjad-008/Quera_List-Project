@@ -81,8 +81,8 @@ function createTagList(...priorities) {
     "border-gray-E9",
     "dark:bg-[#0B192D]",
     "dark:border-[#293242]",
-    "py-1",
-    "px-2",
+    "py-2",
+    "px-1",
     "text-xs",
     "font-bold",
     "shadow-md",
@@ -225,9 +225,9 @@ function createTaskAdder() {
         done: false,
       };
 
-      taskCard.remove();
+      const newTask = createTask(taskObject);
+      taskCard.replaceWith(newTask);
       document.getElementById("task-adder-btn").classList.toggle("hidden");
-      taskCard.after(createTask(taskObject));
     } catch (e) {
       console.log(e);
     }
@@ -237,6 +237,10 @@ function createTaskAdder() {
 
 function taskCard(taskObject) {
   const card = document.createElement("div");
+  card.id = "task-card";
+  card.addEventListener("click", () => {
+    card.classList.remove("border-orange");
+  });
   card.classList.add(
     "rounded-md",
     "border",
@@ -307,7 +311,7 @@ function taskCard(taskObject) {
   }
   card.append(taskDetails, controls);
   taskTitle.addEventListener("input", validAdder);
-
+  taskDesc.addEventListener("input", validAdder);
   return card;
 }
 
@@ -335,6 +339,7 @@ function getTask(task) {
 }
 function createTaskOptions() {
   const wrapper = document.createElement("div");
+  wrapper.id = "task-options";
   wrapper.classList.add(
     "flex",
     "shadow-md",
@@ -377,19 +382,25 @@ function createTaskOptions() {
   );
   wrapper.firstElementChild.addEventListener("click", (ev) => {
     const task = ev.currentTarget.parentElement.parentElement.parentElement;
-    task.after(taskCard(getTask(task)));
-    task.remove();
+    const card = document.getElementById("task-card");
+
+    if (card) {
+      card.classList.add("transition-color", "border-orange");
+    } else {
+      task.after(taskCard(getTask(task)));
+      validAdder();
+      const adderBtn = document.getElementById("task-adder-btn");
+      adderBtn.classList.add("hidden");
+      task.remove();
+    }
+
+    wrapper.remove();
   });
   wrapper.lastElementChild.addEventListener("click", (ev) => {
     ev.stopPropagation();
     wrapper.closest("li").remove();
     updateCompletedTaskCount();
   });
-  console.log(wrapper);
-  wrapper.addEventListener("mou", () => {
-    wrapper.remove();
-  });
-  // write delete function for firstelementchild
   return wrapper;
 }
 
@@ -404,9 +415,11 @@ function createMoreBtn() {
   );
   moreBtn.textContent = "⋮";
   moreBtn.dataset.taskOptions = "";
-  moreBtn.addEventListener("click", () => {
-    const options = createTaskOptions();
-    moreBtn.appendChild(options);
+  moreBtn.addEventListener("click", (ev) => {
+    if (ev.target === ev.currentTarget) {
+      const options = createTaskOptions();
+      moreBtn.appendChild(options);
+    }
   });
   return moreBtn;
 }
@@ -715,6 +728,7 @@ function createTask(taskObject) {
   const tag = createTag(taskObject.priority);
   tag.classList.remove("m-2");
   tag.classList.add("text-xs", "font-semibold");
+  titleAndTag.append(title, tag);
   const desc = document.createElement("span");
   desc.classList.add(
     "min-w-0",
@@ -728,7 +742,6 @@ function createTask(taskObject) {
   );
   desc.textContent = taskObject.desc;
 
-  titleAndTag.append(title, tag);
   taskDetails.append(titleAndTag, desc);
   taskControl.append(input, taskDetails);
 
