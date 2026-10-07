@@ -317,6 +317,7 @@ function taskCard(taskObject) {
   controls.appendChild(adder);
   if (taskObject) {
     card.dataset.id = taskObject.id;
+    adder.textContent = "ویرایش تسک";
     taskTitle.value = taskObject.title;
     taskDesc.value = taskObject.desc || "";
     const appliedTag = createAppliedTag(taskObject.priority);
@@ -335,6 +336,12 @@ function taskCard(taskObject) {
 export function taskAdder() {
   initCompletedTasks();
   renderStoredTasks();
+  document.addEventListener("click", (ev) => {
+    if (!ev.target.closest("[data-task-options]")) closeAllTaskMenus();
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") closeAllTaskMenus();
+  });
   const adderBtn = document.getElementById("task-adder-btn");
   adderBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -349,7 +356,7 @@ function getTask(task) {
 }
 function createTaskOptions() {
   const wrapper = document.createElement("div");
-  wrapper.id = "task-options";
+  wrapper.dataset.taskMenu = "";
   wrapper.classList.add(
     "flex",
     "shadow-md",
@@ -359,6 +366,7 @@ function createTaskOptions() {
     "dark:border-white",
     "dark:text-white",
     "absolute",
+    "z-20",
     "top-full",
     "left-full",
     "p-1",
@@ -391,20 +399,20 @@ function createTaskOptions() {
     "mr-2",
   );
   wrapper.firstElementChild.addEventListener("click", (ev) => {
-    const task = ev.currentTarget.parentElement.parentElement.parentElement;
+    const task = ev.currentTarget.closest("li");
     const card = document.getElementById("task-card");
 
+    closeAllTaskMenus();
     if (card) {
+      // یک کارت افزودن/ویرایش باز است: ابتدا باید همان تمام شود
       card.classList.add("transition-color", "border-orange");
-    } else {
-      task.after(taskCard(getTask(task)));
-      validAdder();
-      const adderBtn = document.getElementById("task-adder-btn");
-      adderBtn.classList.add("hidden");
-      task.remove();
+      card.querySelector("input")?.focus();
+      return;
     }
-
-    wrapper.remove();
+    task.after(taskCard(getTask(task)));
+    validAdder();
+    document.getElementById("task-adder-btn").classList.add("hidden");
+    task.remove();
   });
   wrapper.lastElementChild.addEventListener("click", (ev) => {
     ev.stopPropagation();
@@ -416,24 +424,56 @@ function createTaskOptions() {
   return wrapper;
 }
 
-function createMoreBtn() {
-  const moreBtn = document.createElement("button");
-  moreBtn.classList.add(
-    "relative",
-    "text-gray-52",
-    "cursor-pointer",
-    "hover:opacity-80",
-    "overflow-visible",
-  );
-  moreBtn.textContent = "⋮";
-  moreBtn.dataset.taskOptions = "";
-  moreBtn.addEventListener("click", (ev) => {
-    if (ev.target === ev.currentTarget) {
-      const options = createTaskOptions();
-      moreBtn.appendChild(options);
-    }
+const MORE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>`;
+
+// همه‌ی منوهای باز (ویرایش/حذف) را می‌بندد؛ به‌جز منوی wrapper داده‌شده
+function closeAllTaskMenus(exceptWrapper = null) {
+  document.querySelectorAll("[data-task-options]").forEach((wrapper) => {
+    if (wrapper === exceptWrapper) return;
+    wrapper.querySelector("[data-task-menu]")?.remove();
+    wrapper
+      .querySelector("button[aria-expanded]")
+      ?.setAttribute("aria-expanded", "false");
   });
-  return moreBtn;
+}
+
+// باز/بسته کردن منوی یک تسک (کلیک دوباره روی ⋮ منو را می‌بندد)
+function toggleTaskMenu(wrapper, buildMenu) {
+  const button = wrapper.querySelector("button[aria-expanded]");
+  const existing = wrapper.querySelector("[data-task-menu]");
+  closeAllTaskMenus(wrapper);
+  if (existing) {
+    existing.remove();
+    button.setAttribute("aria-expanded", "false");
+    return;
+  }
+  wrapper.appendChild(buildMenu());
+  button.setAttribute("aria-expanded", "true");
+}
+
+function createMoreBtn() {
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("relative", "flex", "items-center");
+  wrapper.dataset.taskOptions = "";
+
+  const moreBtn = document.createElement("button");
+  moreBtn.type = "button";
+  moreBtn.setAttribute("aria-label", "گزینه‌های تسک");
+  moreBtn.setAttribute("aria-haspopup", "true");
+  moreBtn.setAttribute("aria-expanded", "false");
+  moreBtn.classList.add(
+    "cursor-pointer",
+    "px-2",
+    "text-gray-52",
+    "hover:opacity-80",
+  );
+  moreBtn.innerHTML = MORE_ICON;
+  moreBtn.addEventListener("click", () =>
+    toggleTaskMenu(wrapper, createTaskOptions),
+  );
+
+  wrapper.appendChild(moreBtn);
+  return wrapper;
 }
 
 function updateCompletedTaskCount() {
@@ -467,95 +507,22 @@ function setTaskControl(task) {
 }
 
 function setTaskCardAppearance(task, completed) {
-  const accent = task.querySelector(":scope > [data-task-accent]");
-
-  if (completed) {
-    const color =
-      accent?.style.backgroundColor ||
-      getComputedStyle(task, "::after").backgroundColor;
-    accent?.remove();
-    task.classList.remove(
-      "overflow-hidden",
-      "overflow-visible",
-      "justify-start",
-    );
-    task.classList.add(
-      "overflow-visible",
-      "justify-between",
-      "completed-task-card",
-      "after:absolute",
-      "after:inset-y-0",
-      "after:right-0",
-      "after:w-1",
-      "after:bg-[#f2bd55]",
-      "even:after:bg-[#ef6b55]",
-    );
-    task.classList.remove("dark:bg-blue-tasks");
-    task.classList.add("dark:bg-[#0d1120]");
-    task.style.setProperty("--task-accent", color);
-  } else {
-    const color =
-      task.style.getPropertyValue("--task-accent") ||
-      getComputedStyle(task, "::after").backgroundColor;
-    task.classList.remove(
-      "overflow-hidden",
-      "overflow-visible",
-      "justify-between",
-      "completed-task-card",
-      "after:absolute",
-      "after:inset-y-0",
-      "after:right-0",
-      "after:w-1",
-      "after:bg-[#f2bd55]",
-      "even:after:bg-[#ef6b55]",
-      "dark:bg-[#0d1120]",
-    );
-    task.classList.add(
-      "overflow-hidden",
-      "justify-start",
-      "dark:bg-blue-tasks",
-    );
-    task.style.removeProperty("--task-accent");
-
-    const marker = document.createElement("div");
-    marker.dataset.taskAccent = "";
-    marker.classList.add(
-      "w-1",
-      "absolute",
-      "inset-y-0",
-      "right-0",
-      "rounded-l-md",
-    );
-    marker.style.backgroundColor = color;
-    task.appendChild(marker);
-  }
+  task.classList.toggle("completed-task-card", completed);
+  task.classList.toggle("justify-between", completed);
+  task.classList.toggle("justify-start", !completed);
+  task.classList.toggle("dark:bg-[#0d1120]", completed);
+  task.classList.toggle("dark:bg-blue-tasks", !completed);
 }
 
-function createCompletedMoreBtn(task) {
-  const wrapper = document.createElement("div");
-  wrapper.classList.add("relative", "flex", "items-center");
-
-  const moreBtn = document.createElement("button");
-  moreBtn.type = "button";
-  moreBtn.setAttribute("aria-label", "گزینه‌های تسک انجام‌شده");
-  moreBtn.setAttribute("aria-expanded", "false");
-  moreBtn.classList.add(
-    "relative",
-    "cursor-pointer",
-    "px-2",
-    "text-gray-400",
-    "hover:opacity-80",
-  );
-  moreBtn.textContent = "⋮";
-
+function createCompletedOptions(task) {
   const menu = document.createElement("div");
+  menu.dataset.taskMenu = "";
   menu.classList.add(
     "absolute",
     "flex",
     "items-center",
     "justify-end",
-    "z-10",
-    "hidden",
+    "z-20",
     "rounded-lg",
     "border",
     "border-gray-200",
@@ -602,23 +569,33 @@ function createCompletedMoreBtn(task) {
     updateCompletedTaskCount();
   });
 
-  moreBtn.addEventListener("click", () => {
-    const opening = menu.classList.contains("hidden");
-    document
-      .querySelectorAll("#completed-tasks [aria-expanded='true']")
-      .forEach((button) => {
-        if (button !== moreBtn) {
-          button.setAttribute("aria-expanded", "false");
-          button.nextElementSibling.classList.add("hidden");
-        }
-      });
-    menu.classList.toggle("hidden", !opening);
-    moreBtn.setAttribute("aria-expanded", String(opening));
-  });
-
   menu.appendChild(deleteBtn);
-  wrapper.append(moreBtn, menu);
+  return menu;
+}
+
+function createCompletedMoreBtn(task) {
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("relative", "flex", "items-center");
   wrapper.dataset.taskOptions = "";
+
+  const moreBtn = document.createElement("button");
+  moreBtn.type = "button";
+  moreBtn.setAttribute("aria-label", "گزینه‌های تسک انجام‌شده");
+  moreBtn.setAttribute("aria-haspopup", "true");
+  moreBtn.setAttribute("aria-expanded", "false");
+  moreBtn.classList.add(
+    "relative",
+    "cursor-pointer",
+    "px-2",
+    "text-gray-400",
+    "hover:opacity-80",
+  );
+  moreBtn.innerHTML = MORE_ICON;
+  moreBtn.addEventListener("click", () =>
+    toggleTaskMenu(wrapper, () => createCompletedOptions(task)),
+  );
+
+  wrapper.appendChild(moreBtn);
   return wrapper;
 }
 
@@ -633,6 +610,8 @@ function moveTaskOnCompletion(input, persist = true) {
 
   setTaskControl(task);
   setTaskCardAppearance(task, completed);
+  // توضیحات فقط برای تسک‌های انجام‌نشده نمایش داده می‌شود
+  task.querySelector(".task-desc")?.classList.toggle("hidden", completed);
   input.classList.add("task-checkbox");
 
   if (completed) {
@@ -689,7 +668,6 @@ function createTask(taskObject) {
     "flex",
     "items-center",
     "justify-start",
-    "overflow-hidden",
     "rounded-xl",
     "border",
     "border-gray-200",
@@ -707,9 +685,9 @@ function createTask(taskObject) {
   after.classList.add(
     "w-1",
     "absolute",
-    "inset-y-0",
+    "inset-y-3",
     "right-0",
-    "rounded-l-md",
+    "rounded-full",
   );
   after.style.backgroundColor = getColor(taskObject.priority);
   const taskControl = document.createElement("div");
@@ -753,6 +731,7 @@ function createTask(taskObject) {
   titleAndTag.append(title, tag);
   const desc = document.createElement("span");
   desc.classList.add(
+    "task-desc",
     "min-w-0",
     "wrap-break-word",
     "text-xs",
@@ -764,7 +743,8 @@ function createTask(taskObject) {
   );
   desc.textContent = taskObject.desc;
 
-  taskDetails.append(titleAndTag, desc);
+  taskDetails.append(titleAndTag);
+  if (taskObject.desc) taskDetails.append(desc);
   taskControl.append(input, taskDetails);
 
   const moreBtn = createMoreBtn();

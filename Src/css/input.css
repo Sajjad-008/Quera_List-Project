@@ -72,10 +72,6 @@
   outline-color: #ffffff;
 }
 
-.completed-task-card.completed-task-card::after {
-  background-color: var(--task-accent);
-}
-
 .completed-task-card .task-title {
   color: var(--color-gray-32);
   text-decoration: line-through;
@@ -90,4 +86,22 @@
 
 @theme {
   --font-sans: "Yekan Bakh", sans-serif;
+}
+
+@layer base {
+  /* یک فونت برای همه‌ی المان‌ها، از جمله فرم‌ها */
+  html,
+  body,
+  button,
+  input,
+  select,
+  textarea {
+    font-family: var(--font-sans);
+  }
+
+  /* در Tailwind v4 دکمه‌ها به‌صورت پیش‌فرض pointer ندارند */
+  button:not(:disabled),
+  [role="button"] {
+    cursor: pointer;
+  }
 }
