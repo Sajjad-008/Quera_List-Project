@@ -186,7 +186,9 @@ function createCancel() {
     const count = document.querySelector("#today-tasks-count").dataset.count;
 
     taskAdderBtn.classList.toggle("hidden");
-    document.querySelector("#empty-state").classList.toggle("hidden", count);
+    document
+      .querySelector("#empty-state")
+      .classList.toggle("hidden", Number(count) > 0);
     cancel.parentElement.parentElement.remove();
   });
   return cancel;
@@ -223,9 +225,9 @@ function createTaskAdder() {
         done: false,
       };
 
-      taskCard.remove();
+      const newTask = createTask(taskObject);
+      taskCard.replaceWith(newTask);
       document.getElementById("task-adder-btn").classList.toggle("hidden");
-      taskCard.after(createTask(taskObject));
     } catch (e) {
       console.log(e);
     }
@@ -374,12 +376,14 @@ function createTaskOptions() {
   wrapper.lastElementChild.classList.add(
     "flex",
     "justify-center",
+    "cursor-pointer",
     "hover:opacity-80",
     "mr-2",
   );
   wrapper.firstElementChild.addEventListener("click", (ev) => {
     const task = ev.currentTarget.parentElement.parentElement.parentElement;
     const card = document.getElementById("task-card");
+
     if (card) {
       card.classList.add("transition-color", "border-orange");
     } else {
@@ -389,9 +393,14 @@ function createTaskOptions() {
       adderBtn.classList.add("hidden");
       task.remove();
     }
+
     wrapper.remove();
   });
-  // write delete function for firstelementchild
+  wrapper.lastElementChild.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    wrapper.closest("li").remove();
+    updateCompletedTaskCount();
+  });
   return wrapper;
 }
 
@@ -405,6 +414,7 @@ function createMoreBtn() {
     "overflow-visible",
   );
   moreBtn.textContent = "⋮";
+  moreBtn.dataset.taskOptions = "";
   moreBtn.addEventListener("click", (ev) => {
     if (ev.target === ev.currentTarget) {
       const options = createTaskOptions();
@@ -415,8 +425,94 @@ function createMoreBtn() {
 }
 
 function updateCompletedTaskCount() {
-  const count = document.querySelector("#completed-tasks-count");
-  count.textContent = `${document.querySelectorAll("#completed-tasks > li").length} تسک انجام شده است.`;
+  const completedCount = document.querySelectorAll(
+    "#completed-tasks > li",
+  ).length;
+  const todayCount = document.querySelectorAll("#today-tasks > li").length;
+  const completedLabel = document.querySelector("#completed-tasks-count");
+  const todayLabel = document.querySelector("#today-tasks-count");
+
+  completedLabel.textContent = `${completedCount} تسک انجام شده است.`;
+  todayLabel.textContent = `${todayCount} تسک را باید انجام دهید.`;
+  todayLabel.dataset.count = String(todayCount);
+  document
+    .querySelector("#empty-state")
+    .classList.toggle("hidden", todayCount > 0);
+}
+
+function setTaskControl(task) {
+  const control = task.querySelector(":scope > .task-control, :scope > label");
+
+  if (control.tagName === "LABEL") {
+    const container = document.createElement("div");
+    container.className = control.className
+      .replace("cursor-pointer", "")
+      .trim();
+    container.classList.add("task-control");
+    container.append(...control.childNodes);
+    control.replaceWith(container);
+  }
+}
+
+function setTaskCardAppearance(task, completed) {
+  const accent = task.querySelector(":scope > [data-task-accent]");
+
+  if (completed) {
+    const color =
+      accent?.style.backgroundColor ||
+      getComputedStyle(task, "::after").backgroundColor;
+    accent?.remove();
+    task.classList.remove("overflow-hidden", "overflow-visible", "justify-start");
+    task.classList.add(
+      "overflow-visible",
+      "justify-between",
+      "completed-task-card",
+      "after:absolute",
+      "after:inset-y-0",
+      "after:right-0",
+      "after:w-1",
+      "after:bg-[#f2bd55]",
+      "even:after:bg-[#ef6b55]",
+    );
+    task.classList.remove("dark:bg-blue-tasks");
+    task.classList.add("dark:bg-[#0d1120]");
+    task.style.setProperty("--task-accent", color);
+  } else {
+    const color =
+      task.style.getPropertyValue("--task-accent") ||
+      getComputedStyle(task, "::after").backgroundColor;
+    task.classList.remove(
+      "overflow-hidden",
+      "overflow-visible",
+      "justify-between",
+      "completed-task-card",
+      "after:absolute",
+      "after:inset-y-0",
+      "after:right-0",
+      "after:w-1",
+      "after:bg-[#f2bd55]",
+      "even:after:bg-[#ef6b55]",
+      "dark:bg-[#0d1120]",
+    );
+    task.classList.add(
+      "overflow-hidden",
+      "justify-start",
+      "dark:bg-blue-tasks",
+    );
+    task.style.removeProperty("--task-accent");
+
+    const marker = document.createElement("div");
+    marker.dataset.taskAccent = "";
+    marker.classList.add(
+      "w-1",
+      "absolute",
+      "inset-y-0",
+      "right-0",
+      "rounded-l-md",
+    );
+    marker.style.backgroundColor = color;
+    task.appendChild(marker);
+  }
 }
 
 function createCompletedMoreBtn(task) {
@@ -454,7 +550,7 @@ function createCompletedMoreBtn(task) {
     "dark:bg-[#0d1120]",
   );
   menu.style.cssText =
-    "left:0;top:100%;right:auto;transform:none;margin-top:4px;width:112px;height:48px;box-sizing:border-box";
+    "left:0;top:100%;right:auto;transform:none;margin-top:4px;width:48px;height:44px;box-sizing:border-box";
 
   const deleteBtn = document.createElement("button");
   deleteBtn.type = "button";
@@ -467,22 +563,21 @@ function createCompletedMoreBtn(task) {
     "rounded-md",
     "hover:opacity-80",
   );
-  deleteBtn.style.width = "2.25rem";
-  deleteBtn.style.height = "2.25rem";
-  deleteBtn.style.color = "#ef6b55";
+  deleteBtn.style.width = "2rem";
+  deleteBtn.style.height = "2rem";
   const lightDeleteIcon = document.createElement("img");
   lightDeleteIcon.src = "./Src/assets/images/delete button.png";
   lightDeleteIcon.alt = "";
   lightDeleteIcon.classList.add("dark:hidden");
-  lightDeleteIcon.style.width = "32px";
-  lightDeleteIcon.style.height = "32px";
+  lightDeleteIcon.style.width = "24px";
+  lightDeleteIcon.style.height = "24px";
 
   const darkDeleteIcon = document.createElement("img");
   darkDeleteIcon.src = "./Src/assets/images/delete button dark.png";
   darkDeleteIcon.alt = "";
   darkDeleteIcon.classList.add("hidden", "dark:block");
-  darkDeleteIcon.style.width = "32px";
-  darkDeleteIcon.style.height = "32px";
+  darkDeleteIcon.style.width = "24px";
+  darkDeleteIcon.style.height = "24px";
 
   deleteBtn.append(lightDeleteIcon, darkDeleteIcon);
   deleteBtn.addEventListener("click", () => {
@@ -506,6 +601,7 @@ function createCompletedMoreBtn(task) {
 
   menu.appendChild(deleteBtn);
   wrapper.append(moreBtn, menu);
+  wrapper.dataset.taskOptions = "";
   return wrapper;
 }
 
@@ -515,11 +611,11 @@ function moveTaskOnCompletion(input) {
   const targetList = document.querySelector(
     completed ? "#completed-tasks" : "#today-tasks",
   );
-  const currentOptions = task.querySelector(":scope > button, :scope > div");
+  const currentOptions = task.querySelector(":scope > [data-task-options]");
 
-  task.classList.remove("overflow-hidden", "overflow-visible");
-  task.classList.add(completed ? "overflow-visible" : "overflow-hidden");
-  input.classList.toggle("task-checkbox", completed);
+  setTaskControl(task);
+  setTaskCardAppearance(task, completed);
+  input.classList.add("task-checkbox");
 
   if (completed) {
     currentOptions.replaceWith(createCompletedMoreBtn(task));
@@ -541,12 +637,20 @@ function initCompletedTasks() {
       "#today-tasks input[type='checkbox'], #completed-tasks input[type='checkbox']",
     )
     .forEach((input) => {
+      input.classList.add("task-checkbox");
       input.addEventListener("change", () => moveTaskOnCompletion(input));
     });
 
+  document.querySelectorAll("#today-tasks > li, #completed-tasks > li").forEach((task) => {
+    setTaskControl(task);
+  });
+
   document.querySelectorAll("#completed-tasks > li").forEach((task) => {
-    task.querySelector("input[type='checkbox']").classList.add("task-checkbox");
+    const accentColor = getComputedStyle(task, "::after").backgroundColor;
+    task.classList.add("completed-task-card");
+    task.style.setProperty("--task-accent", accentColor);
     const options = task.querySelector("button");
+    options.dataset.taskOptions = "";
     options.replaceWith(createCompletedMoreBtn(task));
   });
 
@@ -573,26 +677,25 @@ function createTask(taskObject) {
     "pl-4",
     "shadow-sm",
     "dark:border-[#1a2238]",
-    "dark:bg-[#0d1120]",
+    "dark:bg-blue-tasks",
     "dark:shadow-[0_4px_8px_rgba(0,0,0,0.25)]",
   );
   const after = document.createElement("div");
+  after.dataset.taskAccent = "";
   after.classList.add(
     "w-1",
     "absolute",
     "inset-y-0",
     "right-0",
-    "h-8/12",
     "rounded-l-md",
-    "translate-y-3/12",
   );
   after.style.backgroundColor = getColor(taskObject.priority);
-  const label = document.createElement("label");
-  label.classList.add(
+  const taskControl = document.createElement("div");
+  taskControl.classList.add(
+    "task-control",
     "flex",
     "min-w-0",
     "flex-1",
-    "cursor-pointer",
     "items-center",
     "gap-3",
   );
@@ -600,6 +703,7 @@ function createTask(taskObject) {
   input.type = "checkbox";
   input.classList.add(
     "peer",
+    "task-checkbox",
     "size-4.5",
     "shrink-0",
     "cursor-pointer",
@@ -608,10 +712,11 @@ function createTask(taskObject) {
   input.addEventListener("change", () => moveTaskOnCompletion(input));
   const taskDetails = document.createElement("div");
   taskDetails.classList.add("flex", "flex-col", "gap-1", "items-start");
-  const wrap = document.createElement("div");
-  wrap.classList.add("flex", "gap-2");
+  const titleAndTag = document.createElement("div");
+  titleAndTag.classList.add("flex", "items-center", "gap-2");
   const title = document.createElement("span");
   title.classList.add(
+    "task-title",
     "min-w-0",
     "wrap-break-word",
     "peer-checked:text-gray-32",
@@ -623,7 +728,7 @@ function createTask(taskObject) {
   const tag = createTag(taskObject.priority);
   tag.classList.remove("m-2");
   tag.classList.add("text-xs", "font-semibold");
-  wrap.append(title, tag);
+  titleAndTag.append(title, tag);
   const desc = document.createElement("span");
   desc.classList.add(
     "min-w-0",
@@ -637,10 +742,12 @@ function createTask(taskObject) {
   );
   desc.textContent = taskObject.desc;
 
-  taskDetails.append(wrap, desc);
-  label.append(input, taskDetails);
+  taskDetails.append(titleAndTag, desc);
+  taskControl.append(input, taskDetails);
 
   const moreBtn = createMoreBtn();
-  task.append(label, moreBtn, after);
+  moreBtn.dataset.taskOptions = "";
+  task.append(taskControl, moreBtn, after);
   document.querySelector("#today-tasks").appendChild(task);
+  updateCompletedTaskCount();
 }

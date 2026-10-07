@@ -42,6 +42,7 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --color-blue-tasks: #091120;
     --color-gray-F7: #f7f7f7;
     --color-gray-32: #323233;
     --color-gray-52: #525252;
@@ -914,6 +915,9 @@
   .dark\:bg-\[\#0d1120\]:where(.theme-dark, .theme-dark *) {
     background-color: #0d1120;
   }
+  .dark\:bg-blue-tasks:where(.theme-dark, .theme-dark *) {
+    background-color: var(--color-blue-tasks);
+  }
   .dark\:bg-\[\#080b15\]:where(.theme-dark, .theme-dark *) {
     background-color: #080b15;
   }
@@ -1019,6 +1023,16 @@
 }
 .theme-dark .task-checkbox:focus-visible {
   outline-color: #ffffff;
+}
+.completed-task-card.completed-task-card::after {
+  background-color: var(--task-accent);
+}
+.completed-task-card .task-title {
+  color: var(--color-gray-32);
+  text-decoration: line-through;
+}
+.theme-dark .completed-task-card .task-title {
+  color: var(--color-white);
 }
 @property --tw-translate-x {
   syntax: "*";
