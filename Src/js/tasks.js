@@ -1,3 +1,11 @@
+import {
+  getTasks,
+  addTask,
+  updateTask,
+  setTaskDone,
+  deleteTask,
+} from "./storage.js";
+
 function validAdder() {
   document.querySelector("#adder__btn").disabled = !(
     document.querySelector("#card__task-title").value &&
@@ -218,16 +226,24 @@ function createTaskAdder() {
       const desc = document.getElementById("card__task-desc").value.trim();
       const priority = taskCard.firstChild.querySelector(".flex[data-priority]")
         .dataset.priority;
-      const taskObject = {
-        title,
-        desc,
-        priority,
-        done: false,
-      };
-
-      const newTask = createTask(taskObject);
-      taskCard.replaceWith(newTask);
+      const editingId = taskCard.dataset.id;
+      let newTask;
+      if (editingId) {
+        // ویرایش: تسک ذخیره‌شده بروز می‌شود و همان جای قبلی قرار می‌گیرد
+        const saved =
+          updateTask(editingId, { title, desc, priority }) ??
+          addTask({ title, desc, priority });
+        newTask = createTask(saved);
+        taskCard.replaceWith(newTask);
+      } else {
+        // افزودن: تسک جدید ذخیره و به انتهای لیست امروز اضافه می‌شود
+        const saved = addTask({ title, desc, priority });
+        newTask = createTask(saved);
+        taskCard.remove();
+        document.querySelector("#today-tasks").appendChild(newTask);
+      }
       document.getElementById("task-adder-btn").classList.toggle("hidden");
+      updateCompletedTaskCount();
     } catch (e) {
       console.log(e);
     }
@@ -300,6 +316,7 @@ function taskCard(taskObject) {
 
   controls.appendChild(adder);
   if (taskObject) {
+    card.dataset.id = taskObject.id;
     taskTitle.value = taskObject.title;
     taskDesc.value = taskObject.desc || "";
     const appliedTag = createAppliedTag(taskObject.priority);
@@ -317,6 +334,7 @@ function taskCard(taskObject) {
 
 export function taskAdder() {
   initCompletedTasks();
+  renderStoredTasks();
   const adderBtn = document.getElementById("task-adder-btn");
   adderBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -327,15 +345,7 @@ export function taskAdder() {
   });
 }
 function getTask(task) {
-  const taskObject = {};
-  console.log(task);
-
-  const details = task.querySelectorAll("span");
-  taskObject.title = details[0].textContent;
-  taskObject.desc = details[2].textContent;
-  taskObject.priority = task.querySelector("[data-priority]").dataset.priority;
-  taskObject.done = false;
-  return taskObject;
+  return getTasks().find((t) => t.id === task.dataset.id) || null;
 }
 function createTaskOptions() {
   const wrapper = document.createElement("div");
@@ -398,7 +408,9 @@ function createTaskOptions() {
   });
   wrapper.lastElementChild.addEventListener("click", (ev) => {
     ev.stopPropagation();
-    wrapper.closest("li").remove();
+    const li = wrapper.closest("li");
+    deleteTask(li.dataset.id);
+    li.remove();
     updateCompletedTaskCount();
   });
   return wrapper;
@@ -462,7 +474,11 @@ function setTaskCardAppearance(task, completed) {
       accent?.style.backgroundColor ||
       getComputedStyle(task, "::after").backgroundColor;
     accent?.remove();
-    task.classList.remove("overflow-hidden", "overflow-visible", "justify-start");
+    task.classList.remove(
+      "overflow-hidden",
+      "overflow-visible",
+      "justify-start",
+    );
     task.classList.add(
       "overflow-visible",
       "justify-between",
@@ -581,6 +597,7 @@ function createCompletedMoreBtn(task) {
 
   deleteBtn.append(lightDeleteIcon, darkDeleteIcon);
   deleteBtn.addEventListener("click", () => {
+    deleteTask(task.dataset.id);
     task.remove();
     updateCompletedTaskCount();
   });
@@ -605,9 +622,10 @@ function createCompletedMoreBtn(task) {
   return wrapper;
 }
 
-function moveTaskOnCompletion(input) {
+function moveTaskOnCompletion(input, persist = true) {
   const task = input.closest("li");
   const completed = input.checked;
+  if (persist) setTaskDone(task.dataset.id, completed);
   const targetList = document.querySelector(
     completed ? "#completed-tasks" : "#today-tasks",
   );
@@ -624,10 +642,12 @@ function moveTaskOnCompletion(input) {
   }
 
   targetList.appendChild(task);
-  document.querySelector("#empty-state").classList.toggle(
-    "hidden",
-    document.querySelector("#today-tasks").children.length > 0,
-  );
+  document
+    .querySelector("#empty-state")
+    .classList.toggle(
+      "hidden",
+      document.querySelector("#today-tasks").children.length > 0,
+    );
   updateCompletedTaskCount();
 }
 
@@ -641,9 +661,11 @@ function initCompletedTasks() {
       input.addEventListener("change", () => moveTaskOnCompletion(input));
     });
 
-  document.querySelectorAll("#today-tasks > li, #completed-tasks > li").forEach((task) => {
-    setTaskControl(task);
-  });
+  document
+    .querySelectorAll("#today-tasks > li, #completed-tasks > li")
+    .forEach((task) => {
+      setTaskControl(task);
+    });
 
   document.querySelectorAll("#completed-tasks > li").forEach((task) => {
     const accentColor = getComputedStyle(task, "::after").backgroundColor;
@@ -659,7 +681,7 @@ function initCompletedTasks() {
 
 function createTask(taskObject) {
   const task = document.createElement("li");
-  console.log(getColor(taskObject.priority));
+  task.dataset.id = taskObject.id;
 
   task.classList.add(
     "relative",
@@ -748,6 +770,19 @@ function createTask(taskObject) {
   const moreBtn = createMoreBtn();
   moreBtn.dataset.taskOptions = "";
   task.append(taskControl, moreBtn, after);
-  document.querySelector("#today-tasks").appendChild(task);
+  return task;
+}
+
+function renderStoredTasks() {
+  const todayList = document.querySelector("#today-tasks");
+  getTasks().forEach((taskObject) => {
+    const task = createTask(taskObject);
+    todayList.appendChild(task);
+    if (taskObject.done) {
+      const input = task.querySelector("input[type='checkbox']");
+      input.checked = true;
+      moveTaskOnCompletion(input, false);
+    }
+  });
   updateCompletedTaskCount();
 }
