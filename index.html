@@ -1,18 +1,407 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Document</title>
+    <script src="./Src/js/theme-init.js"></script>
+    <link href="./Src/css/output.css" rel="stylesheet" />
+    <title>مدیریت تسک‌ها</title>
   </head>
-  <body>
-    <header>
-      <aside></aside>
-    </header>
-    <main></main>
-    <script src="Src/js/main.js"></script>
-    <script src="Src/js/storage.js"></script>
-    <script src="Src/js/tasks.js"></script>
+
+  <body
+    class="font-sans bg-[#fafafa] text-[#171717] transition-colors duration-300 dark:bg-[#080b15] dark:text-[#f5f5f7] menu-open:overflow-hidden"
+  >
+    <div class="min-h-screen lg:flex">
+      <!-- ===== Mobile Header ===== -->
+      <header
+        class="sticky top-0 z-30 mx-4 mt-4 flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 lg:hidden dark:border-[#1a2238] dark:bg-[#0d1120]"
+      >
+        <button
+          type="button"
+          data-menu-toggle
+          aria-label="باز کردن منو"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+          class="cursor-pointer"
+        >
+          <svg
+            class="size-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+        <span class="text-sm font-extrabold">کوئرا لیست</span>
+        <span class="size-6"></span>
+      </header>
+
+      <!-- ===== Mobile Overlay ===== -->
+      <div
+        data-menu-close
+        aria-hidden="true"
+        class="pointer-events-none fixed inset-0 z-40 bg-black/60 opacity-0 transition-opacity duration-300 menu-open:pointer-events-auto menu-open:opacity-100 lg:hidden"
+      ></div>
+
+      <!-- ================= Sidebar (موبایل: منوی کشویی | دسکتاپ: سایدبار ثابت) ================= -->
+      <aside
+        id="mobile-menu"
+        class="fixed inset-y-0 right-0 z-50 flex w-[280px] translate-x-full flex-col border-l border-gray-100 bg-white p-6 transition-transform duration-300 menu-open:translate-x-0 lg:sticky lg:top-4 lg:z-auto lg:m-4 lg:h-[calc(100vh-32px)] lg:shrink-0 lg:translate-x-0 lg:self-start lg:rounded-2xl lg:border lg:transition-none dark:border-[#1a2238] dark:bg-[#0d1120]"
+      >
+        <!-- هدر منو (فقط موبایل) -->
+        <div class="mb-8 flex items-center justify-between lg:hidden">
+          <span class="text-sm font-extrabold">کوئرا لیست</span>
+          <button
+            type="button"
+            data-menu-close
+            aria-label="بستن منو"
+            class="cursor-pointer"
+          >
+            <svg
+              class="size-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Profile (فقط دسکتاپ) -->
+        <div class="mb-8 hidden items-center gap-3 px-2 lg:flex">
+          <img
+            src="./Src/assets/images/photo.jpg"
+            alt="پروفایل"
+            class="size-12 shrink-0 rounded-full object-cover"
+          />
+          <div class="flex flex-col">
+            <h2 class="text-base font-extrabold text-gray-900 dark:text-white">
+              سلام، رویا
+            </h2>
+            <p class="mt-1 text-xs text-gray-400" data-today-date></p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex flex-col gap-1">
+          <!-- خانه (فعال) -->
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg bg-[#eef6ff] px-4 py-3 text-sm font-extrabold text-[#3b82f6] dark:bg-[#16243d] dark:text-[#60a5fa]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Home-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Home-dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>خانه</span>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#555] hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-[#141b2d]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Task-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Task-Dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>تسک‌ها</span>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#555] hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-[#141b2d]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Calender-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Calender-Dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>تقویم</span>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#555] hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-[#141b2d]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Reports-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Reports-Dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>گزارشات</span>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#555] hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-[#141b2d]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Settings-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Settings-Dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>تنظیمات</span>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#555] hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-[#141b2d]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Support-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Support-Dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>پشتیبانی</span>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm text-[#555] hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-[#141b2d]"
+          >
+            <span class="size-6 shrink-0">
+              <img
+                src="./Src/assets/images/Profile-light.png"
+                alt=""
+                class="size-6 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Profile-Dark.png"
+                alt=""
+                class="hidden size-6 object-contain dark:block"
+              />
+            </span>
+            <span>پروفایل</span>
+          </a>
+        </nav>
+
+        <!-- Bottom -->
+        <div class="mt-auto">
+          <!-- Theme Switch -->
+          <div
+            class="relative flex w-full items-center gap-1 rounded-lg bg-gray-100 p-1 dark:bg-[#080b15]"
+          >
+            <span
+              aria-hidden="true"
+              class="pointer-events-none absolute inset-y-1 right-1 w-[calc(50%-6px)] rounded-md bg-white shadow-sm transition-all duration-300 ease-in-out motion-reduce:transition-none dark:-translate-x-[calc(100%+4px)] dark:bg-[#16243d] dark:shadow-none"
+            ></span>
+
+            <!-- روشن -->
+            <button
+              type="button"
+              data-theme-btn="light"
+              class="relative z-10 cursor-pointer flex flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-sm font-bold text-gray-700 transition-colors duration-300 motion-reduce:transition-none dark:text-gray-500"
+            >
+              <span class="size-5 shrink-0">
+                <img
+                  src="./Src/assets/images/Sun-light.png"
+                  alt=""
+                  class="size-5 object-contain dark:hidden"
+                />
+                <img
+                  src="./Src/assets/images/Sun-Dark.png"
+                  alt=""
+                  class="hidden size-5 object-contain dark:block"
+                />
+              </span>
+              <span>روشن</span>
+            </button>
+
+            <!-- تاریک -->
+            <button
+              type="button"
+              data-theme-btn="dark"
+              class="relative z-10 cursor-pointer flex flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-sm font-bold text-gray-400 transition-colors duration-300 motion-reduce:transition-none dark:text-white"
+            >
+              <span class="size-5 shrink-0">
+                <img
+                  src="./Src/assets/images/Moon-light.png"
+                  alt=""
+                  class="size-5 object-contain dark:hidden"
+                />
+                <img
+                  src="./Src/assets/images/Moon-Dark.png"
+                  alt=""
+                  class="hidden size-5 object-contain dark:block"
+                />
+              </span>
+              <span>تاریک</span>
+            </button>
+          </div>
+          <div
+            class="my-4 border-t border-gray-100 dark:border-[#1a2238]"
+          ></div>
+
+          <!-- Logout -->
+          <button
+            type="button"
+            class="flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-gray-300"
+          >
+            <span class="size-5 shrink-0">
+              <img
+                src="./Src/assets/images/Exit-light.png"
+                alt=""
+                class="size-5 object-contain dark:hidden"
+              />
+              <img
+                src="./Src/assets/images/Exit-Dark.png"
+                alt=""
+                class="hidden size-5 object-contain dark:block"
+              />
+            </span>
+            <span>خروج</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- ================= Main ================= -->
+      <main class="min-w-0 flex-1">
+        <div
+          class="mx-auto flex w-full max-w-[820px] flex-col gap-8 px-4 py-8 lg:px-6 lg:py-10"
+        >
+          <!-- Profile (فقط موبایل) -->
+          <div
+            class="flex items-center gap-3 border-b border-gray-100 pb-6 lg:hidden dark:border-[#1a2238]"
+          >
+            <img
+              src="./Src/assets/images/photo.jpg"
+              alt="پروفایل"
+              class="size-14 shrink-0 rounded-full object-cover"
+            />
+            <div class="flex flex-col gap-1">
+              <h2 class="text-lg font-extrabold">سلام، رویا</h2>
+              <p
+                class="text-xs text-gray-400"
+                data-today-date
+                data-date-prefix="امروز، "
+              ></p>
+            </div>
+          </div>
+
+          <!-- Page Header -->
+          <header class="flex w-full flex-col gap-4">
+            <div class="flex flex-col gap-1">
+              <h1 class="text-xl font-extrabold leading-snug">تسک‌های امروز</h1>
+              <p
+                id="today-tasks-count"
+                class="text-sm text-[#afaeb2] dark:text-[#8b8c98]"
+                data-count="0"
+              >
+                0 تسک را باید انجام دهید.
+              </p>
+            </div>
+            <label
+              id="task-adder-btn"
+              class="flex w-full items-center gap-2 rounded-lg border border-dashed border-[#3b82f6] px-4 py-3 text-sm font-extrabold text-[#3b82f6] cursor-pointer"
+            >
+              <span>+</span>
+              <span>افزودن وظیفه جدید</span>
+              <input type="checkbox" class="hidden" />
+            </label>
+          </header>
+
+          <!-- Today's Tasks (Empty State) -->
+          <section
+            aria-labelledby="today-tasks-title"
+            class="flex w-full flex-col items-center py-6 text-center"
+            id="empty-state"
+          >
+            <img
+              src="./Src/assets/images/no-tasks.svg"
+              alt="بدون تسک"
+              class="h-[232px] w-[283px] max-w-full object-contain opacity-50"
+            />
+            <div class="mt-3 flex flex-col items-center gap-2">
+              <h2
+                id="today-tasks-title"
+                class="text-base font-extrabold text-[#7d7d7f] dark:text-[#d1d1d5]"
+              >
+                چه کارهایی امروز برای انجام داری؟
+              </h2>
+              <p
+                class="text-sm font-semibold text-[#afaeb2] dark:text-[#8b8c98]"
+              >
+                میتونی الان تسک‌هاتو اینجا بنویسی و برنامه ریزی رو شروع کنی!
+              </p>
+            </div>
+          </section>
+          <section id="today">
+            <ul id="today-tasks" class="flex flex-col gap-3"></ul>
+          </section>
+
+          <!-- Completed Tasks -->
+          <section
+            aria-labelledby="completed-tasks-title"
+            class="flex flex-col gap-4"
+          >
+            <div class="flex flex-col gap-1.5">
+              <h2 id="completed-tasks-title" class="text-xl font-extrabold">
+                تسک‌های انجام‌شده
+              </h2>
+              <p
+                id="completed-tasks-count"
+                class="text-sm text-[#afaeb2] dark:text-[#8b8c98]"
+              >
+                0 تسک انجام شده است.
+              </p>
+            </div>
+
+            <ul id="completed-tasks" class="flex flex-col gap-3"></ul>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="Src/js/main.js"></script>
   </body>
 </html>
